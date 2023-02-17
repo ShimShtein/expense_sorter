@@ -1,0 +1,24 @@
+<h1>Upload a new expense report</h1>
+
+<%= form_with model: @source do |form| %>
+
+<div>
+    <%= form.label :source_type %>
+    <%= form.text_field :source_type %>
+</div>
+
+<div>
+    <%= form.label :label %>
+    <%= form.text_field :label %>
+</div>
+
+<div>
+    <%= form.label :csv %>
+    <%= form.file_field :csv %>
+</div>
+
+<div>
+  <%= form.submit %>
+</div>
+
+<% end %>
