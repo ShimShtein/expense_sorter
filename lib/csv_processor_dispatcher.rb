@@ -1,17 +1,12 @@
 class CsvProcessorDispatcher
-    class ProcessorSignals
-        def initialize(dispatcher)
-            @dispatcher = dispatcher            
-        end
-
-        def expense_line(line_number:, date:, amount:, shop_name:, remarks:)
-        end
-    end
-    
-    def self.dipatchers
-        CsvProcessor.descendants
+    def self.processors
+      CsvProcessor.descendants
     end
 
-    def process_file(processor_id, file)
+    def self.process_file(processor_id:, file:)
+      processor = processor_id.constantize
+      raise ArgumentError.new("#{processor} is not in #{self.class.processors}") unless self.class.processors.contains(processor)
+
+      processor.process(file)
     end
 end
