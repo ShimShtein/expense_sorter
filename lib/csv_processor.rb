@@ -1,53 +1,42 @@
 class CsvProcessor
-    attr_reader :dispatcher
-
-    def class << self
-        def name=(name)
-            @name = name
-        end
-
-        def name
-            @name
-        end
-
-        def header_lines=(header_lines)
-            @header_lines = header_lines
-        end
-    
-        def header_lines
-            @header_lines.to_i
-        end
-    
-        def separator=(separator)
-            @separator = separator
-        end
-    
-        def separator
-            @separator || ','
-        end
-
-        def line_processor(&callback)
-            @line_processor = callback
-        end
-
-        def process_line(tokens)
-            @line_processor.call(tokens)
-        end
+    # defaults
+    def separator
+        ','
     end
 
+    class << self
+        def processor_name(name)
+            define_singleton_method :processor_name do
+                name
+            end
+        end
 
-    def initialize(dispatcher)
-        @dispatcher = dispatcher
+        def header_lines(header_lines)
+            define_method :header_lines do
+                header_lines
+            end
+        end
+    
+        def separator(separator)
+            define_method :separator do
+                separator
+            end
+        end
+    
+        def line_processor(&callback)
+            define_method(:process_line, callback)
+        end
     end
 
     def process(file)
         file.rewind
-        self.class.skip_lines.times { file.readline }
+        header_lines.times { file.readline }
    
         expenses_attributes = []
         file.each_line do |line|
-            row = line.split(self.class.separator)
-            expenses_attributes << expense.new(self.class.process_line(row))
+            line.chop! if line.ends_with? "\n"
+            row = line.split(separator)
+            expenses_attributes << process_line(file.lineno, row)
         end
 
         expenses_attributes
