@@ -4,7 +4,14 @@
 
 <div>
     <%= form.label :source_type %>
-    <%= form.text_field :source_type %>
+    <%= form.collection_select(
+        @source, 
+        :source_type, 
+        CsvProcessorDispatcher.processors, 
+        (processor)-> { processor.name },
+        (processor)-> { processor.processor_name }
+        ) 
+    %>
 </div>
 
 <div>
